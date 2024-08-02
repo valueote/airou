@@ -624,4 +624,5 @@ def compile_run_java():
             shutil.rmtree(temp_dir)
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=8000)
+
