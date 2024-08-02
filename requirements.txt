@@ -15,5 +15,5 @@ langchain-text-splitters
 langchainhub                
 langdetect                  
 langsmith                   
-language-selector           
+       
 
