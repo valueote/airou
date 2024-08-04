@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory, session, Response
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
 import secrets
 from werkzeug.utils import secure_filename
 import os
@@ -304,6 +305,21 @@ def get_qa_chain(username, user_message):
 ################################# Config for webUI #################################
 
 # MySQL数据库配置
+db_config = {
+    'user': 'test',
+    'password': 'oneplusone',
+    'host': 'localhost',
+    'database': 'practice'
+}
+
+
+def get_db_connection():
+    """
+    获取数据库连接
+    :return: 数据库连接对象
+    """
+    connection = mysql.connector.connect(**db_config)
+    return connection
 
 
 @app.route('/')
@@ -326,9 +342,18 @@ def register():
     """
     username = request.json.get('username')
     password = request.json.get('password')
+    connection = get_db_connection()
+    cursor = connection.cursor()
 
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    if cursor.fetchone():
+        return jsonify({"message": "用户已存在"}), 400
 
-
+    password_hash = generate_password_hash(password)
+    cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password_hash))
+    connection.commit()
+    cursor.close()
+    connection.close()
     return jsonify({"message": "注册成功"}), 201
 
 
@@ -340,8 +365,15 @@ def login():
     """
     username = request.json.get('username')
     password = request.json.get('password')
+    connection = get_db_connection()
+    cursor = connection.cursor()
 
-
+    cursor.execute("SELECT password FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    cursor.close()
+    connection.close()
+    if not user or not check_password_hash(user[0], password):
+        return jsonify({"message": "用户名或密码错误"}), 401
 
     session['username'] = username
     load_all_histories()
@@ -624,5 +656,4 @@ def compile_run_java():
             shutil.rmtree(temp_dir)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
-
+    app.run(debug=True, use_reloader=False)
