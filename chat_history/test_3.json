@@ -1,0 +1,22 @@
+[
+    {
+        "content": "你好\n",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "human",
+        "name": null,
+        "id": null,
+        "example": false
+    },
+    {
+        "content": "喵？是不是有什么问题想要问我，主人？如果有的话，请随时告诉我，我会尽力帮助你的，喵！",
+        "additional_kwargs": {},
+        "response_metadata": {},
+        "type": "ai",
+        "name": null,
+        "id": null,
+        "example": false,
+        "tool_calls": [],
+        "invalid_tool_calls": []
+    }
+]
