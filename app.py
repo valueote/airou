@@ -359,10 +359,6 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
-    """
-    用户登录
-    :return: 登录结果
-    """
     username = request.json.get('username')
     password = request.json.get('password')
     connection = get_db_connection()
@@ -376,6 +372,7 @@ def login():
         return jsonify({"message": "用户名或密码错误"}), 401
 
     session['username'] = username
+    session.permanent = True  # 设置 session 为永久有效
     load_all_histories()
     if username not in chat_histories or not chat_histories[username]:
         chat_histories[username] = {}
@@ -389,7 +386,6 @@ def login():
 
     chat_histories[username][current_historynum] = load_chat_history(username, current_historynum)  # 加载聊天记录
     return jsonify({"message": "登录成功"}), 200
-
 
 @app.route('/logout')
 def logout():
